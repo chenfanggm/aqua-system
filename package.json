@@ -1,0 +1,24 @@
+{
+  "name": "com.aqua.command",
+  "version": "1.0.0",
+  "displayName": "Aqua Command",
+  "description": "A custom Unity package for aqua-command functionality",
+  "unity": "6000.2",
+  "keywords": [
+    "system"
+  ],
+  "author": {
+    "name": "Aqua",
+    "email": "aqua@aqua.com",
+    "url": "https://www.aqua.com"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "98538ef7c7a22f4ec22101e72f7eec4ed831c724"
+    }
+  }
+}

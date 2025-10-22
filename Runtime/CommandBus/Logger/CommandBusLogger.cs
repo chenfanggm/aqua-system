@@ -1,11 +1,10 @@
 using UnityEngine;
-using Reflex.Attributes;
 
 namespace com.aqua.command
 {
     public class CommandBusLogger : MonoBehaviour
     {
-        [Inject] private ICommandBus _commandBus;
+        private ICommandBus _commandBus;
 
         private void OnEnable()
         {
