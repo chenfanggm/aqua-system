@@ -1,0 +1,53 @@
+# Unity generated files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Unity Package Manager
+node_modules/
+
+# Build results
+[Bb]uild/
+[Bb]uilds/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+
+# Logs
+[Ll]ogs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Backup files
+*.bak
+*.backup
+
