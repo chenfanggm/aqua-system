@@ -1,8 +1,8 @@
 {
   "name": "com.aqua.system",
-  "version": "1.0.1",
-  "displayName": "Aqua Command",
-  "description": "A custom Unity package for aqua-command functionality",
+  "version": "1.0.2",
+  "displayName": "AquaSystem",
+  "description": "A custom Unity package for AquaSystem",
   "unity": "6000.2",
   "keywords": [
     "system"
