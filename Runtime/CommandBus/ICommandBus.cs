@@ -15,7 +15,7 @@ namespace com.aqua.command
         /// <summary>
         /// Register a command handler.
         /// </summary>
-        void RegisterHandler(ICommandHandler<ICommand> handler);
+        void RegisterHandler<T>(ICommandHandler<T> handler) where T : ICommand;
 
         /// <summary>
         /// Enqueue a command for execution.
