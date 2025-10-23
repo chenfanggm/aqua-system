@@ -1,7 +1,7 @@
 using System;
 using MessagePipe;
 
-namespace com.aqua.grid
+namespace com.aqua.system
 {
     /// <summary>
     /// Builder for configuring MessagePipe-based puzzle event bus

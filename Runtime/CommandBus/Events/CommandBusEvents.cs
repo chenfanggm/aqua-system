@@ -1,6 +1,6 @@
 using System;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Default implementation of command bus events.

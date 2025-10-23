@@ -23,7 +23,7 @@ This document provides practical, copy-paste examples for common use cases in Un
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 // Base combat command
 public abstract class CombatCommand : ICommand, ILockingCommand
@@ -103,7 +103,7 @@ public class UseItemCommand : CombatCommand, ICancellableCommand
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class AttackHandler : CommandHandlerBase<AttackCommand>
 {
@@ -179,7 +179,7 @@ public class AttackHandler : CommandHandlerBase<AttackCommand>
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class CombatManager : MonoBehaviour
 {
@@ -262,7 +262,7 @@ public class CombatManager : MonoBehaviour
 ### Commands
 
 ```csharp
-using com.aqua.command;
+using com.aqua.system;
 
 // Add item to inventory
 public class AddItemCommand : ICommand, ILockingCommand
@@ -338,7 +338,7 @@ public enum EquipSlot
 ```csharp
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using com.aqua.command;
+using com.aqua.system;
 
 public class AddItemHandler : CommandHandlerBase<AddItemCommand>
 {
@@ -456,7 +456,7 @@ public class TransferItemHandler : CommandHandlerBase<TransferItemCommand>
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class MovePlayerCommand : ICommand, ILockingCommand, ICancellableCommand
 {
@@ -511,7 +511,7 @@ public class TeleportPlayerCommand : ICommand, ILockingCommand
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class MovePlayerHandler : CommandHandlerBase<MovePlayerCommand>
 {
@@ -592,7 +592,7 @@ public class MovePlayerHandler : CommandHandlerBase<MovePlayerCommand>
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class CastAbilityCommand : ICommand, ILockingCommand, ICancellableCommand
 {
@@ -639,7 +639,7 @@ using System.Threading;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class CastAbilityHandler : CommandHandlerBase<CastAbilityCommand>
 {
@@ -762,7 +762,7 @@ public class CastAbilityHandler : CommandHandlerBase<CastAbilityCommand>
 ```csharp
 using UnityEngine;
 using UnityEngine.UI;
-using com.aqua.command;
+using com.aqua.system;
 
 public class CombatUI : MonoBehaviour
 {
@@ -913,7 +913,7 @@ public class CombatUI : MonoBehaviour
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 // Network command wrapper
 [System.Serializable]

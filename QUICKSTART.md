@@ -26,7 +26,7 @@ Create a new file `MovePlayerCommand.cs`:
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class MovePlayerCommand : ICommand
 {
@@ -48,7 +48,7 @@ Create a new file `MovePlayerHandler.cs`:
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class MovePlayerHandler : CommandHandlerBase<MovePlayerCommand>
 {
@@ -74,7 +74,7 @@ Create a new file `GameManager.cs`:
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class GameManager : MonoBehaviour
 {

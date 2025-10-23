@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Manages entity locks to prevent concurrent operations on the same entity.

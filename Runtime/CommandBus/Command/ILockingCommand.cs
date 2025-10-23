@@ -1,4 +1,4 @@
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Commands that need to lock entities during execution.

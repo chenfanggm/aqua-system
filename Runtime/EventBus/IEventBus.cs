@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using MessagePipe;
 
-namespace com.aqua.grid
+namespace com.aqua.system
 {
     /// <summary>
     /// Manages all puzzle-related events

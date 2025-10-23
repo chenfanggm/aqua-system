@@ -1,7 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Command handler interface for async execution.

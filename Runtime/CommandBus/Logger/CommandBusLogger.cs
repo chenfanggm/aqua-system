@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     public class CommandBusLogger : MonoBehaviour
     {

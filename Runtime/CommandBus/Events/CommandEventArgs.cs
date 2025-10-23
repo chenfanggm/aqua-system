@@ -1,6 +1,6 @@
 using System;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Event args for command lifecycle events.

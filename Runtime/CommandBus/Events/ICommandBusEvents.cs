@@ -1,6 +1,6 @@
 using System;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Event dispatcher for command bus events.

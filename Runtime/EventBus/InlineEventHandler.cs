@@ -3,7 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using MessagePipe;
 
-namespace com.aqua.grid
+namespace com.aqua.system
 {
     public class InlineEventHandler<TEvent> : IAsyncMessageHandler<TEvent>
     {

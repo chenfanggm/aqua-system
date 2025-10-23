@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using MessagePipe;
 
-namespace com.aqua.grid
+namespace com.aqua.system
 {
     /// <summary>
     /// MessagePipe-based puzzle event manager using BuiltinContainerBuilder

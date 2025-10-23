@@ -5,7 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Async command bus implementation with priority queue and entity locking.

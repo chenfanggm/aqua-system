@@ -113,7 +113,7 @@ The Aqua Command System is an enterprise-grade command bus implementation for Un
 
 1. Open Package Manager (`Window > Package Manager`)
 2. Click `+` → `Add package from git URL`
-3. Enter: `[your-git-url]/com.aqua.command.git`
+3. Enter: `[your-git-url]/com.aqua.system.git`
 
 ### Via Local Package
 
@@ -135,7 +135,7 @@ This package requires:
 Commands are immutable data objects representing user intent.
 
 ```csharp
-using com.aqua.command;
+using com.aqua.system;
 
 // Simple command
 public class MovePlayerCommand : ICommand
@@ -161,7 +161,7 @@ Handlers contain the business logic for executing commands.
 ```csharp
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using com.aqua.command;
+using com.aqua.system;
 
 public class MovePlayerHandler : CommandHandlerBase<MovePlayerCommand>
 {
@@ -210,7 +210,7 @@ public class MovePlayerHandler : CommandHandlerBase<MovePlayerCommand>
 
 ```csharp
 using UnityEngine;
-using com.aqua.command;
+using com.aqua.system;
 
 public class GameBootstrap : MonoBehaviour
 {

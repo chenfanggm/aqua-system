@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace com.aqua.command
+namespace com.aqua.system
 {
     /// <summary>
     /// Default implementation of entity lock manager.

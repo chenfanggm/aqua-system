@@ -1,4 +1,4 @@
-namespace com.aqua.command
+namespace com.aqua.system
 {
     public enum CommandFailureReason
     {
