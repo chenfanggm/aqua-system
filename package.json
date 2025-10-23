@@ -1,6 +1,6 @@
 {
   "name": "com.aqua.command",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Aqua Command",
   "description": "A custom Unity package for aqua-command functionality",
   "unity": "6000.2",
