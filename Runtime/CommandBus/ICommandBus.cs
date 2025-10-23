@@ -13,6 +13,11 @@ namespace com.aqua.command
         ICommandBusEvents Events { get; }
 
         /// <summary>
+        /// Register a command handler.
+        /// </summary>
+        void RegisterHandler<T>(ICommandHandler<T> handler) where T : ICommand;
+
+        /// <summary>
         /// Enqueue a command for execution.
         /// </summary>
         void Enqueue(ICommand command);
