@@ -70,5 +70,18 @@ namespace com.aqua.system
         {
             return GlobalMessagePipe.GetAsyncSubscriber<TTopic, TEvent>().Subscribe(topic, handler);
         }
+
+        public IDisposable Subscribe<TEvent>(ISyncMessageHandler<TEvent> handler)
+        {
+            return GlobalMessagePipe.GetSyncSubscriber<TEvent>().Subscribe(handler);
+        }
+
+        public IDisposable Subscribe<TTopic, TEvent>(
+            TTopic topic,
+            ISyncMessageHandler<TEvent> handler
+        )
+        {
+            return GlobalMessagePipe.GetSyncSubscriber<TTopic, TEvent>().Subscribe(topic, handler);
+        }
     }
 }
