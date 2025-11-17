@@ -25,5 +25,20 @@ namespace com.aqua.system
             var subscriber = GlobalMessagePipe.GetAsyncSubscriber<TEvent>();
             return subscriber.Subscribe(handler);
         }
+
+        public async UniTask PublishAsync<TTopic, TEvent>(TTopic topic, TEvent message)
+        {
+            var publisher = GlobalMessagePipe.GetAsyncPublisher<TTopic, TEvent>();
+            await publisher.PublishAsync(topic, message);
+        }
+
+        public IDisposable Subscribe<TTopic, TEvent>(
+            TTopic topic,
+            IAsyncMessageHandler<TEvent> handler
+        )
+        {
+            var subscriber = GlobalMessagePipe.GetAsyncSubscriber<TTopic, TEvent>();
+            return subscriber.Subscribe(topic, handler);
+        }
     }
 }

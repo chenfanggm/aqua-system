@@ -24,9 +24,22 @@ namespace com.aqua.system
         public MessagePipeEventBusBuilder RegisterEvent<TEvent>()
         {
             if (_isBuilt)
-                throw new InvalidOperationException("Cannot register events after the builder has been built.");
+                throw new InvalidOperationException(
+                    "Cannot register events after the builder has been built."
+                );
 
             _builder.AddMessageBroker<TEvent>();
+            return this;
+        }
+
+        public MessagePipeEventBusBuilder RegisterEvent<TTopic, TEvent>()
+        {
+            if (_isBuilt)
+                throw new InvalidOperationException(
+                    "Cannot register events after the builder has been built."
+                );
+
+            _builder.AddMessageBroker<TTopic, TEvent>();
             return this;
         }
 

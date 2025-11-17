@@ -10,11 +10,10 @@ namespace com.aqua.system
     /// </summary>
     public interface IEventBus
     {
-        /// <summary>
-        /// Generic method to publish events through MessagePipe
-        /// </summary>
         UniTask PublishAsync<TEvent>(TEvent message);
-
         IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler);
+
+        UniTask PublishAsync<TTopic, TEvent>(TTopic topic, TEvent message);
+        IDisposable Subscribe<TTopic, TEvent>(TTopic topic, IAsyncMessageHandler<TEvent> handler);
     }
 }
