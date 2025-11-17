@@ -35,35 +35,40 @@ namespace com.aqua.system
                 .PublishAsync(topic, message);
         }
 
-        // ========== Subscribe (sync) ==========
-        public IDisposable Subscribe<TEvent>(Action<TEvent> handler)
-        {
-            return Subscribe(new InlineSyncHandler<TEvent>(handler));
-        }
-
-        public IDisposable Subscribe<TTopic, TEvent>(TTopic topic, Action<TEvent> handler)
-        {
-            return Subscribe(topic, new InlineSyncHandler<TEvent>(handler));
-        }
-
         // ========== Subscribe (async) ==========
-        public IDisposable Subscribe<TEvent>(Func<TEvent, UniTask> handler)
+        public IDisposable SubscribeAsync<TEvent>(Action<TEvent> handler)
         {
-            return Subscribe(new InlineAsyncHandler<TEvent>(handler));
+            return SubscribeAsync(new InlineAsyncHandler<TEvent>(handler));
         }
 
-        public IDisposable Subscribe<TTopic, TEvent>(TTopic topic, Func<TEvent, UniTask> handler)
+        public IDisposable SubscribeAsync<TTopic, TEvent>(TTopic topic, Action<TEvent> handler)
         {
-            return Subscribe(topic, new InlineAsyncHandler<TEvent>(handler));
+            return SubscribeAsync(topic, new InlineAsyncHandler<TEvent>(handler));
         }
+
+        public IDisposable SubscribeAsync<TEvent>(Func<TEvent, UniTask> handler)
+        {
+            return SubscribeAsync(new InlineAsyncHandler<TEvent>(handler));
+        }
+
+        public IDisposable SubscribeAsync<TTopic, TEvent>(
+            TTopic topic,
+            Func<TEvent, UniTask> handler
+        )
+        {
+            return SubscribeAsync(topic, new InlineAsyncHandler<TEvent>(handler));
+        }
+
+        // ========== TODO: Subscribe (sync) ==========
+
 
         // ========== Low-level MessagePipe route ==========
-        private IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler)
+        private IDisposable SubscribeAsync<TEvent>(IAsyncMessageHandler<TEvent> handler)
         {
             return GlobalMessagePipe.GetAsyncSubscriber<TEvent>().Subscribe(handler);
         }
 
-        private IDisposable Subscribe<TTopic, TEvent>(
+        private IDisposable SubscribeAsync<TTopic, TEvent>(
             TTopic topic,
             IAsyncMessageHandler<TEvent> handler
         )
