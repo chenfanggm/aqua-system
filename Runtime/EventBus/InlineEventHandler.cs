@@ -5,32 +5,47 @@ using MessagePipe;
 
 namespace com.aqua.system
 {
-    public class InlineEventHandler<TEvent> : IAsyncMessageHandler<TEvent>
+    public sealed class InlineAsyncHandler<TEvent> : IAsyncMessageHandler<TEvent>
     {
         private readonly Func<TEvent, CancellationToken, UniTask> _handler;
 
-        public InlineEventHandler(Func<TEvent, CancellationToken, UniTask> handler)
+        public InlineAsyncHandler(Func<TEvent, CancellationToken, UniTask> handler)
         {
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
-        public InlineEventHandler(Func<TEvent, UniTask> handler)
+        public InlineAsyncHandler(Func<TEvent, UniTask> handler)
         {
-            _handler = (message, _) => handler(message);
+            _handler = (message, token) => handler(message);
         }
 
-        public InlineEventHandler(Action<TEvent> handler)
+        public InlineAsyncHandler(Action<TEvent> handler)
         {
-            _handler = (message, _) =>
+            _handler = (message, token) =>
             {
                 handler(message);
                 return UniTask.CompletedTask;
             };
         }
 
-        public async UniTask HandleAsync(TEvent message, CancellationToken cancellationToken)
+        public UniTask HandleAsync(TEvent message, CancellationToken cancellationToken)
         {
-            await _handler(message, cancellationToken);
+            return _handler(message, cancellationToken);
+        }
+    }
+
+    public sealed class InlineSyncHandler<TEvent> : IMessageHandler<TEvent>
+    {
+        private readonly Action<TEvent> _handler;
+
+        public InlineSyncHandler(Action<TEvent> handler)
+        {
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        }
+
+        public void Handle(TEvent message)
+        {
+            _handler(message);
         }
     }
 }

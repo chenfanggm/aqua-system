@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using MessagePipe;
 
@@ -11,34 +12,63 @@ namespace com.aqua.system
     /// </summary>
     public class MessagePipeEventBus : IEventBus
     {
-        /// <summary>
-        /// Generic helper method to publish events through MessagePipe
-        /// </summary>
-        public async UniTask PublishAsync<TEvent>(TEvent message)
+        // ========== Publish ==========
+        public void Publish<TEvent>(TEvent message)
         {
-            var publisher = GlobalMessagePipe.GetAsyncPublisher<TEvent>();
-            await publisher.PublishAsync(message);
+            GlobalMessagePipe.GetPublisher<TEvent>().Publish(message);
         }
 
-        public IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler)
+        public async UniTask PublishAsync<TEvent>(TEvent message)
         {
-            var subscriber = GlobalMessagePipe.GetAsyncSubscriber<TEvent>();
-            return subscriber.Subscribe(handler);
+            await GlobalMessagePipe.GetAsyncPublisher<TEvent>().PublishAsync(message);
+        }
+
+        public void Publish<TTopic, TEvent>(TTopic topic, TEvent message)
+        {
+            GlobalMessagePipe.GetPublisher<TTopic, TEvent>().Publish(topic, message);
         }
 
         public async UniTask PublishAsync<TTopic, TEvent>(TTopic topic, TEvent message)
         {
-            var publisher = GlobalMessagePipe.GetAsyncPublisher<TTopic, TEvent>();
-            await publisher.PublishAsync(topic, message);
+            await GlobalMessagePipe
+                .GetAsyncPublisher<TTopic, TEvent>()
+                .PublishAsync(topic, message);
         }
 
-        public IDisposable Subscribe<TTopic, TEvent>(
+        // ========== Subscribe (sync) ==========
+        public IDisposable Subscribe<TEvent>(Action<TEvent> handler)
+        {
+            return Subscribe(new InlineSyncHandler<TEvent>(handler));
+        }
+
+        public IDisposable Subscribe<TTopic, TEvent>(TTopic topic, Action<TEvent> handler)
+        {
+            return Subscribe(topic, new InlineSyncHandler<TEvent>(handler));
+        }
+
+        // ========== Subscribe (async) ==========
+        public IDisposable Subscribe<TEvent>(Func<TEvent, UniTask> handler)
+        {
+            return Subscribe(new InlineAsyncHandler<TEvent>(handler));
+        }
+
+        public IDisposable Subscribe<TTopic, TEvent>(TTopic topic, Func<TEvent, UniTask> handler)
+        {
+            return Subscribe(topic, new InlineAsyncHandler<TEvent>(handler));
+        }
+
+        // ========== Low-level MessagePipe route ==========
+        private IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler)
+        {
+            return GlobalMessagePipe.GetAsyncSubscriber<TEvent>().Subscribe(handler);
+        }
+
+        private IDisposable Subscribe<TTopic, TEvent>(
             TTopic topic,
             IAsyncMessageHandler<TEvent> handler
         )
         {
-            var subscriber = GlobalMessagePipe.GetAsyncSubscriber<TTopic, TEvent>();
-            return subscriber.Subscribe(topic, handler);
+            return GlobalMessagePipe.GetAsyncSubscriber<TTopic, TEvent>().Subscribe(topic, handler);
         }
     }
 }
