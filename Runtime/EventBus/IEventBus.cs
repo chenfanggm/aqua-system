@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using MessagePipe;
 
 namespace com.aqua.system
 {
@@ -17,6 +18,9 @@ namespace com.aqua.system
         UniTask PublishAsync<TTopic, TEvent>(TTopic topic, TEvent message);
 
         // Subscribe
+        IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler);
+        IDisposable Subscribe<TTopic, TEvent>(TTopic topic, IAsyncMessageHandler<TEvent> handler);
+
         IDisposable Subscribe<TEvent>(Action<TEvent> handler);
         IDisposable Subscribe<TEvent>(Func<TEvent, UniTask> handler);
 
