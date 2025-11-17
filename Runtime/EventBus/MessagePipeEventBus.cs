@@ -58,12 +58,12 @@ namespace com.aqua.system
         }
 
         // ========== Low-level MessagePipe route ==========
-        public IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler)
+        private IDisposable Subscribe<TEvent>(IAsyncMessageHandler<TEvent> handler)
         {
             return GlobalMessagePipe.GetAsyncSubscriber<TEvent>().Subscribe(handler);
         }
 
-        public IDisposable Subscribe<TTopic, TEvent>(
+        private IDisposable Subscribe<TTopic, TEvent>(
             TTopic topic,
             IAsyncMessageHandler<TEvent> handler
         )
@@ -71,12 +71,12 @@ namespace com.aqua.system
             return GlobalMessagePipe.GetAsyncSubscriber<TTopic, TEvent>().Subscribe(topic, handler);
         }
 
-        public IDisposable Subscribe<TEvent>(IMessageHandler<TEvent> handler)
+        private IDisposable Subscribe<TEvent>(IMessageHandler<TEvent> handler)
         {
             return GlobalMessagePipe.GetSubscriber<TEvent>().Subscribe(handler);
         }
 
-        public IDisposable Subscribe<TTopic, TEvent>(TTopic topic, IMessageHandler<TEvent> handler)
+        private IDisposable Subscribe<TTopic, TEvent>(TTopic topic, IMessageHandler<TEvent> handler)
         {
             return GlobalMessagePipe.GetSubscriber<TTopic, TEvent>().Subscribe(topic, handler);
         }
