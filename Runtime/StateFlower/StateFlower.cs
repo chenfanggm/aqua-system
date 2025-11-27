@@ -8,12 +8,12 @@ namespace com.aqua.system
     {
         public TState CurrentState => _currentState;
 
-        private readonly IStateFlowRuler<TState> _stateFlowRuler;
+        private readonly IStateFlowRule<TState> _stateFlowRuler;
         private readonly EqualityComparer<TState> _comparer = EqualityComparer<TState>.Default;
         private readonly List<Func<UniTask>> _flowSteps = new();
         private TState _currentState;
 
-        public StateFlower(TState initialState, IStateFlowRuler<TState> stateFlowRuler)
+        public StateFlower(TState initialState, IStateFlowRule<TState> stateFlowRuler)
         {
             _currentState = initialState;
             _stateFlowRuler = stateFlowRuler ?? throw new ArgumentNullException(nameof(stateFlowRuler));
