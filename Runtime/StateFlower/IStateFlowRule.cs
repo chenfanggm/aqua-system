@@ -1,13 +1,13 @@
 namespace com.aqua.system
 {
     /// <summary>
-    /// Ruler for the state flow.
+    /// Rule for the state flow.
     /// </summary>
     /// <typeparam name="TState">The type of the state.</typeparam>
-    public interface IStateFlowRuler<TState>
+    public interface IStateFlowRule<TState>
     {
         /// <summary>
-        /// Determines the next state in the flow.
+        /// Determines whether a transition from one state to another is allowed.
         /// </summary>
         /// <param name="fromState">The current state.</param>
         /// <param name="toState">The target state.</param>
