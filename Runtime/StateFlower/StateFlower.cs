@@ -8,18 +8,15 @@ namespace com.aqua.system
     {
         public TState CurrentState => _currentState;
 
-        private readonly IStateTransitionValidator<TState> _transitionValidator;
+        private readonly IStateFlowRuler<TState> _stateFlowRuler;
         private readonly EqualityComparer<TState> _comparer = EqualityComparer<TState>.Default;
         private readonly List<Func<UniTask>> _flowSteps = new();
         private TState _currentState;
 
-        public StateFlower(
-            TState initialState,
-            IStateTransitionValidator<TState> transitionValidator
-        )
+        public StateFlower(TState initialState, IStateFlowRuler<TState> stateFlowRuler)
         {
             _currentState = initialState;
-            _transitionValidator = transitionValidator ?? throw new ArgumentNullException(nameof(transitionValidator));
+            _stateFlowRuler = stateFlowRuler ?? throw new ArgumentNullException(nameof(stateFlowRuler));
         }
 
         public StateFlower<TState> Transition(TState to, Func<UniTask> action)
@@ -58,7 +55,7 @@ namespace com.aqua.system
                     $"Invalid transition to the same state: {newState}"
                 );
 
-            if (!_transitionValidator.IsTransitionAllowed(_currentState, newState))
+            if (!_stateFlowRuler.IsTransitionAllowed(_currentState, newState))
                 throw new InvalidOperationException(
                     $"Invalid transition from {_currentState} to {newState}"
                 );
