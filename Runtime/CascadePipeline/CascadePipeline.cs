@@ -7,7 +7,7 @@ namespace com.aqua.system
     /// <summary>
     /// Generic async pipeline runner with loop control, once-only steps and end hooks.
     /// </summary>
-    internal class CascadePipeline<TContext>
+    public class CascadePipeline<TContext>
     {
         private readonly List<IPipelineStep<TContext>> _steps = new();
         private readonly List<OnLoopEndStep<TContext>> _onLoopEndSteps = new();
