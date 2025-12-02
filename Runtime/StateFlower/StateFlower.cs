@@ -63,24 +63,5 @@ namespace com.aqua.system
             _currentState = newState;
         }
 
-        /// <summary>
-        /// Immediately transition to a new state without queuing an action.
-        /// Use this for synchronous state transitions.
-        /// </summary>
-        public void TransitionNow(TState newState)
-        {
-            TransitionTo(newState);
-        }
-
-        /// <summary>
-        /// Check if transitioning to the target state is allowed from current state.
-        /// </summary>
-        public bool CanTransitionTo(TState targetState)
-        {
-            if (_comparer.Equals(targetState, _currentState))
-                return false;
-
-            return _stateFlowRuler.IsTransitionAllowed(_currentState, targetState);
-        }
     }
 }

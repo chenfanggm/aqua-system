@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.aqua.system;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace com.aqua.grid
@@ -391,8 +392,11 @@ namespace com.aqua.grid
                 return;
 
             var previousState = State;
-            _stateFlower.TransitionNow(state);
-            RaiseStateChangedEvent(previousState, state);
+            _stateFlower.Transition(state, () =>
+            {
+                RaiseStateChangedEvent(previousState, state);
+                return UniTask.CompletedTask;
+            });
         }
 
         private void DisableEventEmission()
