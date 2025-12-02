@@ -392,11 +392,8 @@ namespace com.aqua.grid
                 return;
 
             var previousState = State;
-            _stateFlower.Transition(state, () =>
-            {
-                RaiseStateChangedEvent(previousState, state);
-                return UniTask.CompletedTask;
-            });
+            _stateFlower.TransitionTo(state);
+            RaiseStateChangedEvent(previousState, state);
         }
 
         private void DisableEventEmission()
