@@ -48,7 +48,7 @@ namespace com.aqua.system
             }
         }
 
-        private void TransitionTo(TState newState)
+        public void TransitionTo(TState newState)
         {
             if (_comparer.Equals(newState, _currentState))
                 throw new InvalidOperationException(
@@ -62,6 +62,5 @@ namespace com.aqua.system
 
             _currentState = newState;
         }
-
     }
 }
