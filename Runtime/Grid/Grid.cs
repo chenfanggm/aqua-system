@@ -12,16 +12,12 @@ namespace com.aqua.grid
         where T : Tile, new()
     {
         // Define allowed state transitions for runtime safety
-        private static readonly Dictionary<GridState, GridState[]> ALLOWED_STATE_TRANSITIONS =
-            new()
-            {
-                { GridState.Initializing, new[] { GridState.Idle } },
-                { GridState.Idle, new[] { GridState.Updating, GridState.Initializing } },
-                { GridState.Updating, new[] { GridState.Idle } }
-            };
-
-        // Instance-based components for better separation of concerns and memory management
-        private static readonly NeighborCellResolver<T> NEIGHBOR_CELL_RESOLVER = new();
+        private static readonly Dictionary<GridState, GridState[]> ALLOWED_STATE_TRANSITIONS = new()
+        {
+            { GridState.Initializing, new[] { GridState.Idle } },
+            { GridState.Idle, new[] { GridState.Updating, GridState.Initializing } },
+            { GridState.Updating, new[] { GridState.Idle } },
+        };
 
         public GridState State { get; private set; } = GridState.Initializing;
 
@@ -50,23 +46,14 @@ namespace com.aqua.grid
 
         public void Initialize()
         {
+            // Clear all tiles
             for (int x = 0; x < GridSize.x; x++)
             {
                 for (int y = 0; y < GridSize.y; y++)
                 {
-                    if (Cells[x, y] == null)
-                    {
-                        Cells[x, y] = new Cell<T>(new Vector2Int(x, y));
-                    }
-                    else
-                    {
-                        Cells[x, y].Clear();
-                    }
+                    Tiles[x, y] = null;
                 }
             }
-
-            // Initialize neighbor relationships after all cells are created
-            NEIGHBOR_CELL_RESOLVER.InitializeNeighborRelationships(this);
 
             // Transition from Initializing to Idle after initialization is complete
             TransitionToState(GridState.Idle);
@@ -85,7 +72,7 @@ namespace com.aqua.grid
             CellSize = cellSize;
             CellSpacing = cellSpacing;
             BottomLeftAnchor = GetBottomLeftAnchor(gridSize, cellSize, cellSpacing);
-            Cells = new Cell<T>[gridSize.x, gridSize.y];
+            Tiles = new T[gridSize.x, gridSize.y];
             Initialize();
         }
 
@@ -111,7 +98,11 @@ namespace com.aqua.grid
             {
                 for (int y = 0; y < GridSize.y; y++)
                 {
-                    clearedTiles.Add(Cells[x, y].RemoveTile());
+                    if (Tiles[x, y] != null)
+                    {
+                        clearedTiles.Add(Tiles[x, y]);
+                        Tiles[x, y] = null;
+                    }
                 }
             }
             TransitionToState(GridState.Idle);
@@ -182,7 +173,8 @@ namespace com.aqua.grid
                         tile
                         ?? throw new ArgumentNullException(nameof(tile), "Tile cannot be null");
 
-                    Cells[gridPos.x, gridPos.y].SetTile(tile);
+                    tile.SetGridPosition(gridPos);
+                    Tiles[gridPos.x, gridPos.y] = tile;
                     affectedTiles.Add(tile);
                 }
             }
@@ -216,13 +208,13 @@ namespace com.aqua.grid
             _ = tile ?? throw new ArgumentNullException(nameof(tile), "Tile cannot be null");
             AssertValidPosition(tile.GridPosition, nameof(tile.GridPosition));
 
-            T currTile = Cells[tile.GridPosition.x, tile.GridPosition.y].Tile;
+            T currTile = Tiles[tile.GridPosition.x, tile.GridPosition.y];
             _ = currTile ?? throw new InvalidOperationException("Tile in cell cannot be null");
             if (currTile != tile)
                 throw new InvalidOperationException(
                     "Tile in cell does not match the removing tile"
                 );
-            Cells[tile.GridPosition.x, tile.GridPosition.y].RemoveTile();
+            Tiles[tile.GridPosition.x, tile.GridPosition.y] = null;
         }
 
         /**
@@ -239,26 +231,23 @@ namespace com.aqua.grid
             var movements = new List<TileMovement<T>>(2);
             using (BeginUpdateTransaction(GridOperation.Swap, affectedTiles))
             {
-                // Get the cells containing the tiles
-                Cell<T> cell1 = GetCellAt(tile1.GridPosition);
-                Cell<T> cell2 = GetCellAt(tile2.GridPosition);
+                var pos1 = tile1.GridPosition;
+                var pos2 = tile2.GridPosition;
 
-                // Verify the tiles are actually in those cells
-                if (cell1.Tile != tile1)
-                    throw new InvalidOperationException("Tile1 is not in the expected cell");
-                if (cell2.Tile != tile2)
-                    throw new InvalidOperationException("Tile2 is not in the expected cell");
+                // Verify the tiles are actually at those positions
+                if (Tiles[pos1.x, pos1.y] != tile1)
+                    throw new InvalidOperationException("Tile1 is not in the expected position");
+                if (Tiles[pos2.x, pos2.y] != tile2)
+                    throw new InvalidOperationException("Tile2 is not in the expected position");
 
                 affectedTiles.Add(tile1);
                 affectedTiles.Add(tile2);
 
-                // Record original positions
-                var pos1 = tile1.GridPosition;
-                var pos2 = tile2.GridPosition;
-
                 // Swap the tiles
-                cell1.SetTile(tile2);
-                cell2.SetTile(tile1);
+                tile1.SetGridPosition(pos2);
+                tile2.SetGridPosition(pos1);
+                Tiles[pos1.x, pos1.y] = tile2;
+                Tiles[pos2.x, pos2.y] = tile1;
 
                 // Create movements based on new positions
                 movements.Add(new TileMovement<T>(tile1, pos1, tile1.GridPosition));
@@ -282,23 +271,13 @@ namespace com.aqua.grid
             {
                 for (int y = 0; y < GridSize.y; y++)
                 {
-                    if (Cells[x, y].HasTile)
+                    if (Tiles[x, y] != null)
                     {
-                        allTiles.Add(Cells[x, y].Tile);
+                        allTiles.Add(Tiles[x, y]);
                     }
                 }
             }
             return allTiles;
-        }
-
-        /**
-        * Get the tile at the specified position.
-        */
-        public T GetTileAt(Vector2Int gridPos)
-        {
-            AssertIdleState("GetTileAt");
-            Cell<T> cell = GetCellAt(gridPos);
-            return cell?.Tile;
         }
 
         /**
@@ -307,8 +286,7 @@ namespace com.aqua.grid
         public bool HasTile(Vector2Int gridPos)
         {
             AssertIdleState("HasTile");
-            Cell<T> cell = GetCellAt(gridPos);
-            return cell != null && cell.HasTile;
+            return HasTileAt(gridPos);
         }
 
         /**
@@ -352,19 +330,20 @@ namespace com.aqua.grid
         {
             AssertIdleState("Clone");
             // Create simulation grid with events disabled
-            Grid<T> clone =
-                new(Origin, GridPlane, GridSize, CellSize, CellSpacing)
-                {
-                    _allowEventEmission = false
-                };
-
-            for (int x = 0; x < Cells.GetLength(0); x++)
+            Grid<T> clone = new(Origin, GridPlane, GridSize, CellSize, CellSpacing)
             {
-                for (int y = 0; y < Cells.GetLength(1); y++)
+                _allowEventEmission = false,
+            };
+
+            for (int x = 0; x < Tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < Tiles.GetLength(1); y++)
                 {
-                    if (Cells[x, y].HasTile)
+                    if (Tiles[x, y] != null)
                     {
-                        clone.Cells[x, y].SetTile(Cells[x, y].Tile);
+                        var tile = Tiles[x, y];
+                        tile.SetGridPosition(new Vector2Int(x, y));
+                        clone.Tiles[x, y] = tile;
                     }
                 }
             }

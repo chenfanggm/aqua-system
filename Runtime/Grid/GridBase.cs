@@ -18,7 +18,10 @@ namespace com.aqua.grid
         public float CellSpacing { get; protected set; }
         public Vector3 BottomLeftAnchor { get; protected set; }
 
-        public Cell<T>[,] Cells { get; protected set; }
+        /// <summary>
+        /// Simple 2D array storing tiles directly
+        /// </summary>
+        public T[,] Tiles { get; protected set; }
 
         protected GridBase(Vector3 origin, GridPlane gridPlane, Vector2Int gridSize, float cellSize, float cellSpacing)
         {
@@ -28,19 +31,27 @@ namespace com.aqua.grid
             CellSize = cellSize;
             CellSpacing = cellSpacing;
             BottomLeftAnchor = GetBottomLeftAnchor(gridSize, cellSize, cellSpacing);
-            Cells = new Cell<T>[gridSize.x, gridSize.y];
+            Tiles = new T[gridSize.x, gridSize.y];
         }
 
-        /**
-        * Get the cell at the specified position.
-        */
-        public Cell<T> GetCellAt(Vector2Int gridPos)
+        /// <summary>
+        /// Get the tile at the specified position (returns null if empty or out of bounds)
+        /// </summary>
+        public T GetTileAt(Vector2Int gridPos)
         {
             if (IsValidPosition(gridPos))
             {
-                return Cells[gridPos.x, gridPos.y];
+                return Tiles[gridPos.x, gridPos.y];
             }
             throw new ArgumentException("Querying invalid grid position");
+        }
+
+        /// <summary>
+        /// Check if a position has a tile
+        /// </summary>
+        public bool HasTileAt(Vector2Int gridPos)
+        {
+            return IsValidPosition(gridPos) && Tiles[gridPos.x, gridPos.y] != null;
         }
 
         /// <summary>
@@ -158,6 +169,30 @@ namespace com.aqua.grid
             return dx == 1 && dy == 1;
         }
 
+        /// <summary>
+        /// Get adjacent neighbor tiles for a position
+        /// </summary>
+        public List<T> GetAdjacentNeighbors(Vector2Int position)
+        {
+            return NeighborUtils.GetAdjacentTiles(position, Tiles, GridSize);
+        }
+
+        /// <summary>
+        /// Get diagonal neighbor tiles for a position
+        /// </summary>
+        public List<T> GetDiagonalNeighbors(Vector2Int position)
+        {
+            return NeighborUtils.GetDiagonalTiles(position, Tiles, GridSize);
+        }
+
+        /// <summary>
+        /// Get all neighbor tiles for a position (adjacent + diagonal)
+        /// </summary>
+        public List<T> GetAllNeighbors(Vector2Int position)
+        {
+            return NeighborUtils.GetAllNeighborTiles(position, Tiles, GridSize);
+        }
+
         protected Vector3 GetBottomLeftAnchor(
             Vector2Int gridSize,
             float cellSize,
@@ -180,9 +215,9 @@ namespace com.aqua.grid
 
         public override string ToString()
         {
-            int width = Cells?.GetLength(0) ?? 0;
-            int height = Cells?.GetLength(1) ?? 0;
-            return $"Grid(GridSize: {GridSize}, CellSize: {CellSize}, CellSpacing: {CellSpacing}, BottomLeftAnchor: {BottomLeftAnchor}, Cells: {width}x{height})";
+            int width = Tiles?.GetLength(0) ?? 0;
+            int height = Tiles?.GetLength(1) ?? 0;
+            return $"Grid(GridSize: {GridSize}, CellSize: {CellSize}, CellSpacing: {CellSpacing}, BottomLeftAnchor: {BottomLeftAnchor}, Tiles: {width}x{height})";
         }
     }
 }
