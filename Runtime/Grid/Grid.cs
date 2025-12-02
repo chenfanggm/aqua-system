@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using com.aqua.system;
 using UnityEngine;
 
 namespace com.aqua.grid
@@ -11,15 +12,7 @@ namespace com.aqua.grid
     public class Grid<T> : GridBase<T>, IDisposable
         where T : Tile, new()
     {
-        // Define allowed state transitions for runtime safety
-        private static readonly Dictionary<GridState, GridState[]> ALLOWED_STATE_TRANSITIONS = new()
-        {
-            { GridState.Initializing, new[] { GridState.Idle } },
-            { GridState.Idle, new[] { GridState.Updating, GridState.Initializing } },
-            { GridState.Updating, new[] { GridState.Idle } },
-        };
-
-        public GridState State { get; private set; } = GridState.Initializing;
+        public GridState State => _stateFlower.CurrentState;
 
         // Events
         public event EventHandler<GridInitializedEventArgs<T>> OnInitialized;
@@ -29,6 +22,11 @@ namespace com.aqua.grid
 
         // Flag to control event emission (only the main grid should emit events)
         private bool _allowEventEmission = true;
+
+        private readonly StateFlower<GridState> _stateFlower = new(
+            initialState: GridState.Initializing,
+            stateFlowRuler: new GridStateFlowRule()
+        );
 
         public Grid(
             Vector3 origin,
@@ -392,24 +390,8 @@ namespace com.aqua.grid
             if (State == state)
                 return;
 
-            // Check if the transition is allowed
-            if (ALLOWED_STATE_TRANSITIONS.TryGetValue(State, out var allowedStates))
-            {
-                if (!allowedStates.Contains(state))
-                {
-                    throw new InvalidOperationException(
-                        $"Cannot transition from {State} to {state}. "
-                            + $"Allowed transitions from {State} are: {string.Join(", ", allowedStates)}."
-                    );
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException($"No transitions defined from state {State}.");
-            }
-
             var previousState = State;
-            State = state;
+            _stateFlower.TransitionNow(state);
             RaiseStateChangedEvent(previousState, state);
         }
 
