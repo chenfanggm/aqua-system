@@ -59,28 +59,23 @@ namespace com.aqua.system
         /// <summary>
         /// Executes the pipeline. Optional reset callback runs at the beginning of each iteration.
         /// </summary>
-        public async UniTask RunAsync(TContext context, Action<TContext> resetContext = null)
+        public async UniTask RunAsync(TContext context, long deltaTime = 0, Action<TContext> onIterationStart = null)
         {
-            if (!_hasEndLoopStep)
-                throw new InvalidOperationException("Pipeline must end with AddEndStep");
+            if (!_hasEndLoopStep) throw new InvalidOperationException("Pipeline must end with AddEndStep");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             ResetExecutionState();
 
             while (_iterationCount < _maxIterations)
             {
-                resetContext?.Invoke(context);
+                onIterationStart?.Invoke(context);
                 var shouldContinue = false;
 
                 foreach (var step in _steps)
                 {
-                    if (ShouldSkipRunOnceStep(step))
-                        continue;
-
+                    if (ShouldSkipRunOnceStep(step)) continue;
                     shouldContinue = await step.ExecuteAsync(context);
-                    if (!shouldContinue)
-                        break;
-
+                    if (!shouldContinue) break;
                     MarkRunOnceSteps(step);
                 }
 
