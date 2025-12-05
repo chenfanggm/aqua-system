@@ -6,7 +6,7 @@ namespace com.aqua.system
     /// <summary>
     /// Terminates the loop when the supplied predicate returns true.
     /// </summary>
-    public class EndLoopStep<TContext> : IPipelineStep<TContext>
+    public class EndLoopStep<TContext> : OnceStepBase<TContext>
     {
         private readonly Func<TContext, bool> _shouldEndLoop;
 
@@ -15,7 +15,7 @@ namespace com.aqua.system
             _shouldEndLoop = shouldEndLoop ?? throw new ArgumentNullException(nameof(shouldEndLoop));
         }
 
-        public UniTask<bool> ExecuteAsync(TContext context)
+        protected override UniTask<bool> OnExecuteAsync(TContext context, long deltaTime)
         {
             var shouldRerun = !_shouldEndLoop(context);
             return UniTask.FromResult(shouldRerun);

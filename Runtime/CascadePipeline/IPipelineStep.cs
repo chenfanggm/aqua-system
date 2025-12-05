@@ -7,6 +7,12 @@ namespace com.aqua.system
     /// </summary>
     public interface IPipelineStep<TContext>
     {
-        UniTask<bool> ExecuteAsync(TContext context);
+        bool IsRunOnce { get; }
+        bool HasRun { get; }
+
+        UniTask<bool> ExecuteAsync(TContext context, long deltaTime);
+
+        // Reset the step to its initial state.
+        void Reset();
     }
 }

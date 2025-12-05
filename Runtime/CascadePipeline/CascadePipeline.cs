@@ -10,9 +10,7 @@ namespace com.aqua.system
     public class CascadePipeline<TContext>
     {
         private readonly List<IPipelineStep<TContext>> _steps = new();
-        private readonly List<OnLoopEndStep<TContext>> _onLoopEndSteps = new();
-        private readonly List<IPipelineStep<TContext>> _runOnceSteps = new();
-        private readonly HashSet<IPipelineStep<TContext>> _hasRunOnceSteps = new();
+        private readonly List<IPipelineStep<TContext>> _onPipelineEndSteps = new();
         private readonly int _maxIterations;
         private bool _hasEndLoopStep;
         private int _iterationCount;
@@ -23,23 +21,15 @@ namespace com.aqua.system
             _maxIterations = maxIterations;
         }
 
-        public CascadePipeline<TContext> AddStep(IPipelineStep<TContext> step)
-        {
-            EnsureMutable();
-            _steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
-            return this;
-        }
-
-        public CascadePipeline<TContext> AddOnceStep(IPipelineStep<TContext> step)
+        public CascadePipeline<TContext> AddOnceStep(OnceStepBase<TContext> step) => AddStep(step);
+        public CascadePipeline<TContext> AddRerunStep(RerunStepBase<TContext> step) => AddStep(step);
+        private CascadePipeline<TContext> AddStep(IPipelineStep<TContext> step)
         {
             EnsureMutable();
             step = step ?? throw new ArgumentNullException(nameof(step));
             _steps.Add(step);
-            _runOnceSteps.Add(step);
             return this;
         }
-
-        public CascadePipeline<TContext> AddRerunStep(IPipelineStep<TContext> step) => AddStep(step);
 
         public CascadePipeline<TContext> AddEndLoopStep(EndLoopStep<TContext> step)
         {
@@ -50,9 +40,9 @@ namespace com.aqua.system
             return this;
         }
 
-        public CascadePipeline<TContext> AddOnLoopEndStep(OnLoopEndStep<TContext> step)
+        public CascadePipeline<TContext> AddOnPipelineEndStep(OnceStepBase<TContext> step)
         {
-            _onLoopEndSteps.Add(step ?? throw new ArgumentNullException(nameof(step)));
+            _onPipelineEndSteps.Add(step ?? throw new ArgumentNullException(nameof(step)));
             return this;
         }
 
@@ -64,7 +54,7 @@ namespace com.aqua.system
             if (!_hasEndLoopStep) throw new InvalidOperationException("Pipeline must end with AddEndStep");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            ResetExecutionState();
+            Reset();
 
             while (_iterationCount < _maxIterations)
             {
@@ -73,44 +63,34 @@ namespace com.aqua.system
 
                 foreach (var step in _steps)
                 {
-                    if (ShouldSkipRunOnceStep(step)) continue;
-                    shouldContinue = await step.ExecuteAsync(context);
+                    if (step.IsRunOnce && step.HasRun) continue;
+                    shouldContinue = await step.ExecuteAsync(context, deltaTime);
                     if (!shouldContinue) break;
-                    MarkRunOnceSteps(step);
                 }
 
                 _iterationCount++;
-                if (!shouldContinue)
-                    break;
+                if (!shouldContinue) break;
             }
 
-            foreach (var step in _onLoopEndSteps)
+            foreach (var step in _onPipelineEndSteps)
             {
-                await step.ExecuteAsync(context);
+                await step.ExecuteAsync(context, deltaTime);
             }
         }
 
-        private void ResetExecutionState()
+        private void Reset()
         {
             _iterationCount = 0;
-            _hasRunOnceSteps.Clear();
+            foreach (var step in _steps)
+            {
+                step.Reset();
+            }
         }
 
         private void EnsureMutable()
         {
             if (_hasEndLoopStep)
                 throw new InvalidOperationException("Cannot add steps after AddEndStep");
-        }
-
-        private bool ShouldSkipRunOnceStep(IPipelineStep<TContext> step)
-        {
-            return _runOnceSteps.Contains(step) && _hasRunOnceSteps.Contains(step);
-        }
-
-        private void MarkRunOnceSteps(IPipelineStep<TContext> step)
-        {
-            if (!_hasRunOnceSteps.Contains(step))
-                _hasRunOnceSteps.Add(step);
         }
     }
 }
