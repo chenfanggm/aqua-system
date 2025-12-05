@@ -15,7 +15,7 @@ namespace com.aqua.system
             _shouldEndLoop = shouldEndLoop ?? throw new ArgumentNullException(nameof(shouldEndLoop));
         }
 
-        protected override UniTask<bool> OnExecuteAsync(TContext context, long deltaTime)
+        protected override UniTask<bool> OnExecuteAsync(TContext context, double deltaTime)
         {
             var shouldRerun = !_shouldEndLoop(context);
             return UniTask.FromResult(shouldRerun);

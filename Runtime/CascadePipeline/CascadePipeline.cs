@@ -50,7 +50,8 @@ namespace com.aqua.system
         /// <summary>
         /// Executes the pipeline. Optional reset callback runs at the beginning of each iteration.
         /// </summary>
-        public async UniTask RunAsync(TContext context, long deltaTime = 0,
+        /// <param name="deltaTime">Seconds since the last iteration.</param>
+        public async UniTask RunAsync(TContext context, double deltaTime = 0f,
             Action<TContext> onIterationStart = null, CancellationToken cancellationToken = default)
         {
             if (!_hasEndLoopStep) throw new InvalidOperationException("Pipeline must end with AddEndStep");

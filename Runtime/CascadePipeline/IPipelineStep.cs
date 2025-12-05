@@ -10,7 +10,7 @@ namespace com.aqua.system
         bool IsRunOnce { get; }
         bool HasRun { get; }
 
-        UniTask<bool> ExecuteAsync(TContext context, long deltaTime);
+        UniTask<bool> ExecuteAsync(TContext context, double deltaTime);
 
         // Reset the step to its initial state.
         void Reset();

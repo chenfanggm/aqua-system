@@ -10,7 +10,7 @@ namespace com.aqua.system
         public bool IsRunOnce => true;
         public bool HasRun { get; private set; }
 
-        public async UniTask<bool> ExecuteAsync(TContext context, long deltaTime)
+        public async UniTask<bool> ExecuteAsync(TContext context, double deltaTime)
         {
             var result = await OnExecuteAsync(context, deltaTime);
             HasRun = true;
@@ -22,7 +22,7 @@ namespace com.aqua.system
             HasRun = false;
         }
 
-        protected abstract UniTask<bool> OnExecuteAsync(TContext context, long deltaTime);
+        protected abstract UniTask<bool> OnExecuteAsync(TContext context, double deltaTime);
     }
 }
 
