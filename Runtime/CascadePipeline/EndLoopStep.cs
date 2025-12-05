@@ -6,7 +6,7 @@ namespace com.aqua.system
     /// <summary>
     /// Terminates the loop when the supplied predicate returns true.
     /// </summary>
-    public class EndLoopStep<TContext> : OnceStepBase<TContext>
+    public class EndLoopStep<TContext> : RerunStepBase<TContext>
     {
         private readonly Func<TContext, bool> _shouldEndLoop;
 

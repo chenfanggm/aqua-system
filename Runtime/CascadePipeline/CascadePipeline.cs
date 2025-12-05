@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace com.aqua.system
@@ -49,7 +50,8 @@ namespace com.aqua.system
         /// <summary>
         /// Executes the pipeline. Optional reset callback runs at the beginning of each iteration.
         /// </summary>
-        public async UniTask RunAsync(TContext context, long deltaTime = 0, Action<TContext> onIterationStart = null)
+        public async UniTask RunAsync(TContext context, long deltaTime = 0,
+            Action<TContext> onIterationStart = null, CancellationToken cancellationToken = default)
         {
             if (!_hasEndLoopStep) throw new InvalidOperationException("Pipeline must end with AddEndStep");
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -58,6 +60,7 @@ namespace com.aqua.system
 
             while (_iterationCount < _maxIterations)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 onIterationStart?.Invoke(context);
                 var shouldContinue = false;
 
@@ -85,12 +88,16 @@ namespace com.aqua.system
             {
                 step.Reset();
             }
+            foreach (var step in _onPipelineEndSteps)
+            {
+                step.Reset();
+            }
         }
 
         private void EnsureMutable()
         {
             if (_hasEndLoopStep)
-                throw new InvalidOperationException("Cannot add steps after AddEndStep");
+                throw new InvalidOperationException("Cannot add steps after AddEndLoopStep");
         }
     }
 }
